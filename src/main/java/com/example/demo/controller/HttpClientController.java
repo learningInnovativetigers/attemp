@@ -41,5 +41,9 @@ public class HttpClientController {
         return JSONObject.parseObject(httpResult.getBody());
     }
 
+    public JSONObject testDealDicData() {
+        return httpAPIService.dealDicData();
+    }
+
 
 }
