@@ -32,6 +32,7 @@ public class UserEntity {
     @ExcelProperty(value = "操作时间")
     private Date time;
 
+    // easyExcel官网：https://easyexcel.opensource.alibaba.com/
     public static void main(String[] args) {
         // 导出
         // List<UserEntity> dataList = new ArrayList<>();

@@ -1,7 +1,10 @@
 package com.example.demo.service;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.example.demo.model.HttpResult;
+import com.example.demo.model.SaveRpDicDataDescReqDTO;
+import com.example.demo.model.SaveRpDicDataReqDTO;
 import org.apache.http.HttpHeaders;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -32,10 +35,50 @@ public class HttpAPIService {
     @Autowired
     private RequestConfig config;
 
+    // TODO: 2022.08.08 不同环境对应不同地址
+    // private String host = "https://boss.test.fosun-creative.com";
+
     public JSONObject dealDicData() {
 
         return null;
     }
+
+    public String saveRpDicData(SaveRpDicDataReqDTO saveRpDicDataReqDTO, String env) throws Exception {
+        String url = getHostByEnv(env) + "/be/api/bosscloud-fosunhealth-rp-dic/rp/dic/saveRpDicData";
+        HttpResult httpResult = doPost(url, JSONObject.parseObject(JSON.toJSONString(saveRpDicDataReqDTO), Map.class));
+        JSONObject jsonObject = JSONObject.parseObject(httpResult.getBody());
+        if (null == jsonObject) {
+            throw new Exception();
+        }
+        JSONObject result = (JSONObject)jsonObject.get("result");
+        return (String) result.get("dataId");
+    }
+
+    public String saveRpDicDataDesc(SaveRpDicDataDescReqDTO saveRpDicDataDescReqDTO, String env) throws Exception {
+        String url = getHostByEnv(env) + "/be/api/bosscloud-fosunhealth-rp-dic/rp/dic/saveRpDicDataDesc";
+        HttpResult httpResult = doPost(url, JSONObject.parseObject(JSON.toJSONString(saveRpDicDataDescReqDTO), Map.class));
+        JSONObject jsonObject = JSONObject.parseObject(httpResult.getBody());
+        if (null == jsonObject) {
+            throw new Exception();
+        }
+
+        JSONObject result = (JSONObject)jsonObject.get("result");
+        return (String) result.get("dataDescId");
+    }
+
+    public String getHostByEnv(String env) {
+        switch (env) {
+            case "dev":
+                return "https://boss.dev.fosun-creative.com";
+            case "test":
+                return "https://boss.test.fosun-creative.com";
+            case "pro":
+                return "https://boss.fosun-creative.com";
+            default:
+                return "https://boss.dev.fosun-creative.com";
+        }
+    }
+
 
 
     /**
@@ -93,7 +136,7 @@ public class HttpAPIService {
      * @return
      * @throws Exception
      */
-    public HttpResult doPost(String url, Map<String, Object> map) throws Exception {
+    public HttpResult doPost(String url, Map map) throws Exception {
         // 声明httpPost请求
         HttpPost httpPost = new HttpPost(url);
         // 加入配置信息
